@@ -3,8 +3,11 @@ package com.yogender.recipeapp.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.yogender.recipeapp.interfaces.Routes;
 import com.yogender.recipeapp.model.Recipe;
+import com.yogender.recipeapp.model.User;
+import com.yogender.recipeapp.repository.UserRepository;
 import com.yogender.recipeapp.service.RecipeService;
 import com.yogender.recipeapp.service.redis.RedisService;
+import com.yogender.recipeapp.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +28,14 @@ public class ApiController implements Routes {
     @Autowired
     private RedisService redisService;
 
+    // Recipe---------------------------------------------------------
     @PostMapping("/recipe")
     @Override
     public Recipe createRecipe(@RequestBody Recipe recipe) {
-        return service.createRecipe(recipe);
+        Recipe newRecipe = service.createRecipe(recipe);
+        redisService.updateRedisRecipe(newRecipe,60);
+        return newRecipe;
+
     }
 
     @GetMapping("/recipes")
@@ -65,4 +72,60 @@ public class ApiController implements Routes {
 
         return recipe;
     }
+
+
+    // User---------------------------------------------------------
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/user/registration")
+    @Override
+    public boolean userRegistration(JsonNode requestBody) {
+        if(!requestBody.has("username") ||  !requestBody.has("password") || !requestBody.has("email")){
+            throw new IllegalArgumentException("Request body must contain 'username', 'password' and 'email' fields");
+        }
+
+        String username = requestBody.get("username").asText();
+        String password = requestBody.get("password").asText();
+        String email = requestBody.get("email").asText();
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setEmail(email);
+
+        userService.saveUser(user);
+        return true;
+    }
+
+    @GetMapping("/user/login")
+    @Override
+    public String userLogin(JsonNode requestBody) {
+        if(!requestBody.has("username") ||  !requestBody.has("password")){
+            throw new IllegalArgumentException("Request body must contain 'username' and 'password' fields");
+        }
+
+        String username = requestBody.get("username").asText();
+        String password = requestBody.get("password").asText();
+
+        String token = userService.userLoginByUsernameAndPassword(username, password);
+
+        if(token != null){
+            return token;
+        } else {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+    }
+
+    @GetMapping("/user/check")
+    @Override
+    public boolean isUserLoggedIn(JsonNode requestBody) {
+        String token = requestBody.get("token").asText();
+        if(token == null){
+            throw new IllegalArgumentException("input token is null");
+        }
+
+        return userService.checkToken(token);
+    }
+
 }

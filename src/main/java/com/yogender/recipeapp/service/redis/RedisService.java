@@ -19,6 +19,12 @@ public class RedisService {
         }
     }
 
+    public void updateRedisRecipe(Recipe recipe, int ttl) {
+        if (recipe != null) {
+            redisTemplate.opsForValue().set(recipe.getId().toString(), recipe, ttl, TimeUnit.SECONDS);
+        }
+    }
+
     public Recipe findRecipeById(Long id) {
         if (id == null) {
             return null;
