@@ -111,6 +111,37 @@ mvn spring-boot:run
   "id": 3
 }
 ```
+---
+### User Management
+- **Register User**: `POST /api/user/registeration`
+- **User login**: `GET /api/user/login`
+- **Check User validation**: `GET /api/user/check`
+
+
+### Example Request for `POST /api/user/registeration`
+```json
+{
+  "username": "Yogender",
+  "password": "123@123",
+  "email": "y@gmail.com"
+}
+```
+
+
+### Example Request for `GET /api/user/login`
+```json
+{
+  "username": "Yogender",
+  "password": "123@123"
+}
+```
+### Example Request for `GET /api/user/check`
+```json
+{
+  "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJZb2dlbmRlciIsImV4cCI6MTc1MTQ1NDQ5M30.r0lKbR-Sy2OlK6oArA3IYIKWuVuK5-qvQseLqfiKKk3PGRL8nUsYetud1X5TKADhvh9Nv-ANcED3uuNxeyYt4A"
+}
+```
+
 
 ---
 
