@@ -142,6 +142,30 @@ mvn spring-boot:run
 }
 ```
 
+---
+### Favourite Recipe Management
+- **Mark Favourite recipe**: `POST /api/user/updatefavouriterecipes`
+- **Get Favourite recipe**: `GET /api/user/favouriterecipes`
+
+
+### Example Request for `POST /api/user/updatefavouriterecipes`
+```json
+{
+  "userid": 3,
+  "recipeid":3,
+  "token": "<token of user>"
+}
+```
+
+
+### Example Request for `GET /api/user/favouriterecipes`
+```json
+{
+  "userid": 1,
+  "token": "<token of user>"
+}
+```
+
 
 ---
 

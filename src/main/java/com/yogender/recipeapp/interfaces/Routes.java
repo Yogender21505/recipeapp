@@ -16,4 +16,8 @@ public interface Routes {
     public boolean userRegistration(@RequestBody JsonNode requestBody);
     public String userLogin(@RequestBody JsonNode requestBody);
     public boolean isUserLoggedIn(@RequestBody JsonNode requestBody);
+
+    //user recipe
+    public List<Recipe> getFavouriterRecipes(@RequestBody JsonNode requestBody);
+    public boolean updateFavouriteRecipe(@RequestBody JsonNode requestBody);
 }

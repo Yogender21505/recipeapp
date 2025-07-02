@@ -1,6 +1,5 @@
 package com.yogender.recipeapp.service.user;
 
-import com.yogender.recipeapp.controller.ApiController;
 import com.yogender.recipeapp.model.User;
 import com.yogender.recipeapp.repository.UserRepository;
 import io.jsonwebtoken.Claims;
