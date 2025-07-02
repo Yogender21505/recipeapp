@@ -2,10 +2,11 @@ package com.yogender.recipeapp.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.yogender.recipeapp.interfaces.Routes;
+import com.yogender.recipeapp.model.FavouriteRecipe;
 import com.yogender.recipeapp.model.Recipe;
 import com.yogender.recipeapp.model.User;
-import com.yogender.recipeapp.repository.UserRepository;
 import com.yogender.recipeapp.service.RecipeService;
+import com.yogender.recipeapp.service.favouriterecipe.FavRecipeService;
 import com.yogender.recipeapp.service.redis.RedisService;
 import com.yogender.recipeapp.service.user.UserService;
 import org.slf4j.Logger;
@@ -28,6 +29,8 @@ public class ApiController implements Routes {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private FavRecipeService favRecipeService;
     // Recipe---------------------------------------------------------
     @PostMapping("/recipe")
     @Override
@@ -126,6 +129,44 @@ public class ApiController implements Routes {
         }
 
         return userService.checkToken(token);
+    }
+
+
+    // User Recipe routes--------------------------------
+
+    @GetMapping("/user/favouriterecipes")
+    @Override
+    public List<Recipe> getFavouriterRecipes(JsonNode requestBody) {
+        boolean isValid = userService.checkToken(requestBody.get("token").asText());
+
+        if(!requestBody.has("userid")){
+            throw new IllegalArgumentException("Request body must contain 'userid' fields");
+        }
+        if(!isValid){
+            throw new IllegalArgumentException("Invalid token");
+        }
+        Long userid = requestBody.get("userid").asLong();
+        return favRecipeService.getFavouriteRecipes(userid);
+    }
+
+    @PostMapping("/user/updatefavouriterecipes")
+    @Override
+    public boolean updateFavouriteRecipe(JsonNode requestBody) {
+        boolean isValid = userService.checkToken(requestBody.get("token").asText());
+
+        if(!requestBody.has("userid") || !requestBody.has("recipeid")){
+            throw new IllegalArgumentException("Request body must contain 'userid' and 'recipeid' fields");
+        }
+        if(!isValid){
+            throw new IllegalArgumentException("Invalid token");
+        }
+        Long userid = requestBody.get("userid").asLong();
+        Long recipeid = requestBody.get("recipeid").asLong();
+        FavouriteRecipe favouriteRecipe = new FavouriteRecipe();
+        favouriteRecipe.setUserId(userid);
+        favouriteRecipe.setRecipeId(recipeid);
+        favRecipeService.UpdateFavouriteRecipe(favouriteRecipe);
+        return true;
     }
 
 }
