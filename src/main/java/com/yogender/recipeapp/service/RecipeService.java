@@ -21,7 +21,7 @@ public class RecipeService {
         return recipeRepository.findAll();
     }
     public Recipe getRecipeById(Long id){
-        return recipeRepository.findRecipesById(id);
+        return recipeRepository.findById(id).get();
     }
 }
 
